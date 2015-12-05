@@ -1,47 +1,46 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace ConwaysGameOfLife
 {
-	public class Game : IReadonlyField
+	public class Game
 	{
 		private readonly int width;
 		private readonly int height;
-		private readonly IGameUi ui;
 		private int[,] cellAge;
+         
 
-		public Game(int width, int height, IGameUi ui)
+		public Game(int width, int height, Point[] points)
 		{
 			this.width = width;
 			this.height = height;
-			this.ui = ui;
 			cellAge = new int[width, height];
-		}
+            foreach (var pos in points)
+                cellAge[(pos.X + width) % width, (pos.Y + height) % height] = 1;
 
-		public int GetAge(int x, int y)
-		{
-			return cellAge[(x + width) % width, (y + height) % height];
-		}
+        }
+        private Game(int width, int height, int[,] cellAge)
+        {
+            this.width = width;
+            this.height = height;
+            this.cellAge = cellAge;
+        }
 
-		public void ReviveCells(params Point[] points)
-		{
-			foreach (var pos in points)
-				cellAge[(pos.X + width) % width, (pos.Y + height) % height] = 1;
-			ui.Update(this);
-		}
+        public int GetAge(int x, int y) =>cellAge[(x + width) % width, (y + height) % height];
+        
+	    
 
-		public void Step()
+	    public Game Step()
 		{
-			int[,] newCellAge = new int[width, height];
-			for (int y = 0; y < height; y++)
-				for (int x = 0; x < width; x++)
-				{
-					var aliveCount = GetNeighbours(x, y).Count(p => GetAge(p.X, p.Y) > 0);
-					newCellAge[x, y] = NewCellAge(cellAge[x, y], aliveCount);
-					if (newCellAge[x, y] != cellAge[x, y])
-						ui.Update(x, y, newCellAge[x, y]);
-			}
-			cellAge = newCellAge;
+			var newCellAge = new int[width, height];
+			for (var y = 0; y < height; y++)
+			    for (var x = 0; x < width; x++)
+			    {
+			        var aliveCount = GetNeighbours(x, y).Count(p => GetAge(p.X, p.Y) > 0);
+			        newCellAge[x, y] = NewCellAge(cellAge[x, y], aliveCount);
+			    }
+	        return new Game(this.width, this.height, newCellAge);
 		}
 
 		private static int NewCellAge(int age, int aliveNeighbours)

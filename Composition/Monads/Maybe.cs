@@ -4,20 +4,35 @@ namespace Composition.Monads
 {
 	public static class Maybe
 	{
-		public static Maybe<T> FromValue<T>(T value)
-		{
-			throw new NotImplementedException("TODO Maybe");
-		}
+		public static Maybe<T> FromValue<T>(T value)=>new Maybe<T>(null, value);
+		public static Maybe<T> FromError<T>(Exception e) => new Maybe<T>(e, default(T));
 
-		public static Maybe<T> FromError<T>(Exception e)
-		{
-			throw new NotImplementedException("TODO Maybe");
-		}
-
-		public static Maybe<T> Result<T>(Func<T> f)
-		{
-			throw new NotImplementedException("TODO Maybe");
-		}
+	    public static Maybe<T> Result<T>(Func<T> f)
+	    {
+	        try
+	        {
+                return FromValue(f());
+            }
+	        catch (Exception e)
+	        {
+	            return FromError<T>(e);
+	        }
+	    }
+        public static Maybe<TOut> SelectMany<TIn,TSome, TOut>(
+            this Maybe<TIn> monad,
+            Func<TIn,TSome> f,
+            Func<TIn,TSome, TOut> f1)
+        {
+            if (!monad.Success)
+                return FromError<TOut>(monad.Error);
+            return Result(() => f1(monad.Value, f(monad.Value)));
+        }
+        public static Maybe<TOut> SelectMany<TIn, TOut>(this Maybe<TIn> monad, Func<TIn,TOut> f )
+        {
+            if (monad.Success)
+                return Result(() => f(monad.Value));
+            return FromError<TOut>(monad.Error);
+        }
 
 		//TODO Maybe add SelectMany
 	}

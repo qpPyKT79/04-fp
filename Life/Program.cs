@@ -7,12 +7,13 @@ namespace ConwaysGameOfLife
 		private static void Main(string[] args)
 		{
 			var ui = new ConsoleUi(20, 20);
-			var game = new Game(20, 20, ui);
-			game.ReviveCells(glider);
+			var game = new Game(20, 20, glider);
+            ui.Update(game);
 			while (true)
 			{
 				Console.ReadKey(intercept:true);
-				game.Step();
+			    game = game.Step();
+                ui.Update(game);
 			}
 		}
 

@@ -2,7 +2,7 @@
 
 namespace ConwaysGameOfLife
 {
-	public class ConsoleUi : IGameUi
+	public class ConsoleUi
 	{
 		public ConsoleUi(int width, int height)
 		{
@@ -20,7 +20,7 @@ namespace ConwaysGameOfLife
 			ConsoleColor.White
 		};
 
-		public void Update(IReadonlyField field)
+		public void Update(Game field)
 		{
 			var oldColor = Console.BackgroundColor;
 			try
@@ -43,9 +43,9 @@ namespace ConwaysGameOfLife
 			}
 		}
 
-		public void Update(int x, int y, int age)
+		public void Update(Point point, int age)
 		{
-			Console.SetCursorPosition(x, y);
+			Console.SetCursorPosition(point.X, point.Y);
 			Console.BackgroundColor = colors[Math.Min(age, colors.Length - 1)];
 			Console.Write(' ');
 		}

@@ -26,15 +26,14 @@ namespace Composition.Monads
 		}
 		
 		// TODO Maybe Uncomment!
-		/*
+		
 		[Test]
 		public void Support_Linq_Syntax()
 		{
 			var res =
-				from i in Maybe.Result(() => int.Parse("1358571172"))
-				from hex in Convert.ToString(i, 16)
-				from guid in Guid.Parse(hex+hex+hex+hex)
-				select guid;
+			    Maybe.Result(() => int.Parse("1358571172"))
+			        .SelectMany(i => Convert.ToString(i, 16), (i, hex) => new {i, hex})
+			        .SelectMany(@t => Guid.Parse(@t.hex + @t.hex + @t.hex + @t.hex));
 
 			Assert.That(res.Success, Is.True);
 			Assert.That(res.Value, Is.EqualTo(Guid.Parse("50FA26A450FA26A450FA26A450FA26A4")));
@@ -65,6 +64,6 @@ namespace Composition.Monads
 			Assert.That(res.Error, Is.InstanceOf<FormatException>());
 			Console.WriteLine(res.Error.Message);
 		}
-		*/
+		
 	}
 }
